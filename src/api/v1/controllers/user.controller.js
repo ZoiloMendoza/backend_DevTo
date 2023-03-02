@@ -1,25 +1,73 @@
-// import UserService from '../../'
+import User from '../models/user.model'
 
 export class UserController {
-  getAllUsers(request, response) {
-    // logica de modelos para hacer queries
-    response.json({ message: 'Get All Users OK' })
+  async getAllUsers(request, response, next) {
+    try {
+      const users =  await User.find({}).populate('posts')
+      response.status(200).send(users)
+    } catch (error) {
+      next(error)
+    }
+    
   }
 
-  getUser(request, response) {
-    response.json({ message: 'Get User OK' })
+  async getUser(request, response, next) {
+    try {
+      const { id } = request.params;
+      const user = await User.findById(id).populate('posts')
+  
+      if (!user) {
+        response.status(404).send({ 
+          error: 'No se encontro ningún registro en la base de datos'
+        })
+      }
+      response.status(200).send(user)
+    } catch (error) {
+      next(error)  
+    }
   }
 
-  createUser(request, response) {
-    response.json({ message: 'Create User OK' })
+  async createUser(request, response, next) {
+    try {
+      const { name, email, password } = request.body
+      const newUser = new User({
+        name,
+        email,
+        password
+      })
+      await newUser.save()
+      response.status(201).send(newUser)
+    } catch(error) {
+      next(error)
+    }
   }
 
-  updateUser(request, response) {
-    response.json({ message: 'Update User OK' })
+  async updateUser(request, response, next) {
+    try {
+      const { id } = request.params
+      const bodyParams = { ...request.body }
+      const updatedUser = await User.findByIdAndUpdate(id, bodyParams, { new: true })
+      response.status(201).send(updatedUser)
+    } catch(error) {
+      next(error)
+    }
+
   }
 
-  deleteUser(request, response) {
-    response.json({ message: 'Delete User OK' })
+  async deleteUser(request, response, next) {
+    try {
+      const { id } = request.params;
+      const deletedUser = await User.findByIdAndDelete(id)
+      
+      if (!deletedUser) {
+        response.status(404).send({ 
+          error: 'No se encontro ningún registro en la base de datos'
+        })
+      }
+      response.sendStatus(204);
+    } catch(error) {
+      next(error)
+    }
   }
 }
 

@@ -14,14 +14,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     minLength: 8
   },
-  role: {
-    type: String,
-    enum: {
-      values: ['admin', 'staff'],
-      message: 'This {VALUE} option is not supported'
-    },
-    required: true
-  },
   posts: [
     {
       type: mongoose.Schema.Types.ObjectId,
