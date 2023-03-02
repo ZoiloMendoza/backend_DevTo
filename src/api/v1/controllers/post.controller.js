@@ -16,7 +16,7 @@ export class PostController {
   async getPost(request, response, next) {
     try {
       const { id } = request.params // se obtiene de la url de la peticion
-      const post = await Post.findById(id)
+      const post = await Post.findById(id).populate('comments')
   
       if (!post) {
         response.status(404).send({ 
@@ -30,6 +30,7 @@ export class PostController {
   }
 
  async createPost(request, response, next) {
+  //agregar validacion si existe usuario
     try {
       const { title, content, author } = request.body
       const newPost = new Post({
@@ -38,11 +39,12 @@ export class PostController {
         author
       })
       await newPost.save()
+      console.log('new Post')
       const user = await User.findById({ _id: newPost.author })
+      console.log(user)
       user.posts.push(newPost)
       await user.save({ validateBeforeSave: false })
       response.status(201).send(newPost)
-  
     } catch(error) {
       next(error)
     }

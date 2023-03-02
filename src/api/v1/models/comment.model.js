@@ -12,7 +12,11 @@ const commentSchema = new mongoose.Schema({
     },
     likes: {
         type: Number
-    }
+    },
+    post: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
+      }
 }, {
     timestamps: true 
 })

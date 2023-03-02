@@ -3,7 +3,7 @@ import UserController from '../controllers/user.controller'
 import AuthMiddleware from '../../middlewares/auth';
 
 export default express
-  .Router('/users')
+  .Router()
   .get('/', UserController.getAllUsers)
   .post('/', UserController.createUser)
   .get('/:id', UserController.getUser)
