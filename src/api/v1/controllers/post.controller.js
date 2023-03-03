@@ -7,7 +7,7 @@ export class PostController {
   async getAllPosts(request, response, next) {
     try {
       const posts = await Post.find({})
-      response.status(200).send(posts)
+      response.status(200).send(posts).populate('author')
     } catch(error) {
       next(error)
     }
@@ -16,7 +16,7 @@ export class PostController {
   async getPost(request, response, next) {
     try {
       const { id } = request.params // se obtiene de la url de la peticion
-      const post = await Post.findById(id).populate('comments')
+      const post = await Post.findById(id)
   
       if (!post) {
         response.status(404).send({ 
@@ -41,7 +41,6 @@ export class PostController {
       await newPost.save()
       console.log('new Post')
       const user = await User.findById({ _id: newPost.author })
-      console.log(user)
       user.posts.push(newPost)
       await user.save({ validateBeforeSave: false })
       response.status(201).send(newPost)

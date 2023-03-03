@@ -29,11 +29,12 @@ export class UserController {
 
   async createUser(request, response, next) {
     try {
-      const { name, email, password } = request.body
+      const { name, email, password, userPhoto } = request.body
       const newUser = new User({
         name,
         email,
-        password
+        password,
+        userPhoto
       })
       await newUser.save()
       response.status(201).send(newUser)
