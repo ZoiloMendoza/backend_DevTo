@@ -1,25 +1,67 @@
-
+import Comment from '../models/comment.model'
+import Post from '../models/post.models'
 
 export class CommentController {
-  getAllComments(request, response) {
-    // logica de modelos para hacer queries
-    response.json({ message: 'todos lo commentarios' })
+  async getAllComments(request, response, next) {
+    try {
+      const comm = await Comment.find({})
+      response.status(200).send(comm)
+    } catch (error) {
+      next(error)
+    }
   }
 
-  getComment(request, response) {
-    response.json({ message: 'Get Comment OK' })
+  async getComment(request, response, next) {
+    try {
+      const { id } = request.params//se optiene de la url de la petición
+      const comm = await Comment.findById(id)
+      if(!comm){
+        response.status(404).send({
+          error: 'No se encontro ningún registro en la base de datos'
+        })
+      }
+      response.status(200).send(comm)
+    } catch (error) {
+      next(error)
+    }
   }
 
-  createComment(request, response) {
-    response.json({ message: 'Create Comment OK' })
+  async createComment(request, response, next) {
+    try {
+      const { content, author, post } = request.body
+      
+      const newComment = new Comment({
+        content,
+        author,
+        post
+      })
+      await newComment.save()
+
+      const pos = await Post.findById({_id: newComment.post})
+      pos.comments.push(newComment)
+
+      await pos.save({ validateBeforeSave: false })//investigar
+
+      response.status(201).send(newComment)
+
+    } catch (error) {
+      next(error)
+    }
   }
 
-  updateComment(request, response) {
-    response.json({ message: 'Update Comment OK' })
+  async updateComment(request, response, next) {
+    try {
+      const { id } = request.params
+      const bodyRequst = {...request.body}
+      const updateComment = await Comment.findByIdAndUpdate(id, bodyRequst, { new: true })//buscar que hace la parte final
+      response.status(201).send(updateComment)
+    } catch (error) {
+      next(error)
+    }
   }
 
   deleteComment(request, response) {
-    response.json({ message: 'Delete Comment OK' })
+    
   }
 }
 
