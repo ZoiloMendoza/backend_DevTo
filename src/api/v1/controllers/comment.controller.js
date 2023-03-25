@@ -60,9 +60,21 @@ export class CommentController {
     }
   }
 
-  deleteComment(request, response) {
+  async deleteComment(request, response, next) {
+    try {
+      const { id } = request.params
+      const deleteComment = await Comment.findByIdAndDelete(id)
+      if (!deleteComment) {
+        response.status(404).send({
+          error: "No se encontro el commentario en la base de datos"
+      })} 
+    response.status(200).send({message: "Registro eliminado correctamente"})
     
-  }
+  } catch (error) {
+    next(error)
+    }
+    }
+
 }
 
 export default new CommentController()
