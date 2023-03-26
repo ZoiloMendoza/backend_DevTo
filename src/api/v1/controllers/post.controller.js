@@ -6,8 +6,8 @@ import User from '../models/user.model'
 export class PostController {
   async getAllPosts(request, response, next) {
     try {
-      const posts = await Post.find({})
-      response.status(200).send(posts).populate('author')
+      const posts = await Post.find({}).populate('author')
+      response.status(200).send(posts)
     } catch(error) {
       next(error)
     }
@@ -16,7 +16,7 @@ export class PostController {
   async getPost(request, response, next) {
     try {
       const { id } = request.params // se obtiene de la url de la peticion
-      const post = await Post.findById(id)
+      const post = await Post.findById(id).populate('author','Comment')
   
       if (!post) {
         response.status(404).send({ 
